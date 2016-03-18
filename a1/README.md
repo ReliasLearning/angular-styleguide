@@ -725,9 +725,9 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
 **[Back to top](#table-of-contents)**
 
-## Services
+# Services
 
-### Single Responsibility
+## Single Responsibility
 ###### [Style [Y050](#style-y050)]
 
   - Services should have a [single responsibility](https://en.wikipedia.org/wiki/Single_responsibility_principle), that is encapsulated by its context. Once a service begins to exceed that singular purpose, a new service should be created.
