@@ -604,7 +604,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 ### Defer Controller Logic to Services
 ###### [Style [Y035](#style-y035)]
 
-  - Defer logic in a controller by delegating to services and factories.
+  - Defer logic in a controller by delegating to services.
 
     *Why?*: Logic may be reused by multiple controllers when placed within a service and exposed via a function.
 
@@ -664,7 +664,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 ### Keep Controllers Focused
 ###### [Style [Y037](#style-y037)]
 
-  - Define a controller for a view, and try not to reuse the controller for other views. Instead, move reusable logic to factories and keep the controller simple and focused on its view.
+  - Define a controller for a view, and try not to reuse the controller for other views. Instead, move reusable logic to services and keep the controller simple and focused on its view.
 
     *Why?*: Reusing controllers with several views is brittle and good end-to-end (e2e) test coverage is required to ensure stability across large applications.
 
@@ -727,10 +727,15 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
 ## Services
 
+### Single Responsibility
+###### [Style [Y050](#style-y050)]
+
+  - Services should have a [single responsibility](https://en.wikipedia.org/wiki/Single_responsibility_principle), that is encapsulated by its context. Once a service begins to exceed that singular purpose, a new service should be created.
+
 ### Singletons
 ###### [Style [Y040](#style-y040)]
 
-  - Services are instantiated with the `new` keyword, use `this` for public methods and variables. Since these are so similar to factories, use a factory instead for consistency.
+  - Services are instantiated with the `new` keyword, use `this` for public methods and variables. Since a service is a constructor function and allows us to use ECMAScript 6 classes, always use services instead of factories.
 
     Note: [All Angular services are singletons](https://docs.angularjs.org/guide/services). This means that there is only one instance of a given service per injector.
 
@@ -766,17 +771,10 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
 ## Factories
 
-### Single Responsibility
+### Use Services
 ###### [Style [Y050](#style-y050)]
 
-  - Factories should have a [single responsibility](https://en.wikipedia.org/wiki/Single_responsibility_principle), that is encapsulated by its context. Once a factory begins to exceed that singular purpose, a new factory should be created.
-
-### Singletons
-###### [Style [Y051](#style-y051)]
-
-  - Factories are singletons and return an object that contains the members of the service.
-
-    Note: [All Angular services are singletons](https://docs.angularjs.org/guide/services).
+  - Factories and services are nearly identical in Angular but services allow for an easier transition to ECMAScript 6 since they are constructor functions so use services instead of factories (http://blog.thoughtram.io/angular/2015/07/07/service-vs-factory-once-and-for-all.html).
 
 ### Accessible Members Up Top
 ###### [Style [Y052](#style-y052)]
@@ -832,8 +830,6 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
   ```
 
   This way bindings are mirrored across the host object, primitive values cannot update alone using the revealing module pattern.
-
-    ![Factories Using "Above the Fold"](https://raw.githubusercontent.com/johnpapa/angular-styleguide/master/a1/assets/above-the-fold-2.png)
 
 ### Function Declarations to Hide Implementation Details
 ###### [Style [Y053](#style-y053)]
@@ -1518,7 +1514,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
 
   - The `catch` block of a promise must return a rejected promise to maintain the exception in the promise chain.
 
-  - Always handle exceptions in services/factories.
+  - Always handle exceptions in services.
 
     *Why?*: If the `catch` block does not return a rejected promise, the caller of the promise will not know an exception occurred. The caller's `then` will execute. Thus, the user may never know what happened.
 
@@ -1975,7 +1971,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     avengers.controller.js
     avengersController.js
 
-    // Services/Factories
+    // Services
     logger.js
     logger.service.js
     loggerService.js
@@ -1990,7 +1986,7 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     avengers.controller.js
     avengers.controller.spec.js
 
-    // services/factories
+    // services
     logger.service.js
     logger.service.spec.js
 
@@ -2084,14 +2080,14 @@ While this guide explains the *what*, *why* and *how*, I find it helpful to see 
     function AvengersController() { }
     ```
 
-### Factory and Service Names
+### Service Names
 ###### [Style [Y125](#style-y125)]
 
-  - Use consistent names for all factories and services named after their feature. Use camel-casing for services and factories. Avoid prefixing factories and services with `$`. Only suffix service and factories with `Service` when it is not clear what they are (i.e. when they are nouns).
+  - Use consistent names for all services named after their feature. Use camel-casing for services. Avoid prefixing services with `$`. Only suffix services with `Service` when it is not clear what they are (i.e. when they are nouns).
 
-    *Why?*: Provides a consistent way to quickly identify and reference factories.
+    *Why?*: Provides a consistent way to quickly identify and reference services.
 
-    *Why?*: Avoids name collisions with built-in factories and services that use the `$` prefix.
+    *Why?*: Avoids name collisions with built-in services and services that use the `$` prefix.
 
     *Why?*: Clear service names such as `logger` do not require a suffix.
 
@@ -2711,18 +2707,18 @@ Unit testing helps maintain clean code, as such I included some of my recommenda
 
     ```javascript
     /**
-     * Logger Factory
-     * @namespace Factories
+     * Logger Service
+     * @namespace Services
      */
     (function() {
       angular
           .module('app')
-          .factory('logger', logger);
+          .service('logger', logger);
 
       /**
        * @namespace Logger
        * @desc Application wide logger
-       * @memberOf Factories
+       * @memberOf Services
        */
       function logger($log) {
           var service = {
@@ -2737,7 +2733,7 @@ Unit testing helps maintain clean code, as such I included some of my recommenda
            * @desc Logs errors
            * @param {String} msg Message to log
            * @returns {String}
-           * @memberOf Factories.Logger
+           * @memberOf Services.Logger
            */
           function logError(msg) {
               var loggedMsg = 'Error: ' + msg;
